@@ -118,12 +118,12 @@ func (pin Pin) Output() {
 
 // Set pin High
 func (pin Pin) High() {
-	WritePin(pin, High)
+	WritePin(pin, true)
 }
 
 // Set pin Low
 func (pin Pin) Low() {
-	WritePin(pin, Low)
+	WritePin(pin, false)
 }
 
 // Toggle pin state
@@ -137,7 +137,7 @@ func (pin Pin) Mode(dir Direction) {
 }
 
 // Set pin state (high/low)
-func (pin Pin) Write(state State) {
+func (pin Pin) Write(state bool) {
 	WritePin(pin, state)
 }
 
@@ -186,7 +186,7 @@ func PinMode(pin Pin, direction Direction) {
 
 // WritePin sets a given pin High or Low
 // by setting the clear or set registers respectively
-func WritePin(pin Pin, state State) {
+func WritePin(pin Pin, state bool) {
 
 	p := uint8(pin)
 
@@ -198,12 +198,11 @@ func WritePin(pin Pin, state State) {
 	memlock.Lock()
 	defer memlock.Unlock()
 
-	if state == Low {
-		mem[clearReg] = 1 << (p & 31)
-	} else {
+	if state {
 		mem[setReg] = 1 << (p & 31)
+	} else {
+		mem[clearReg] = 1 << (p & 31)
 	}
-
 }
 
 // Read the state of a pin
